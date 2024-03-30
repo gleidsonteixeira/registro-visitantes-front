@@ -6,6 +6,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { useBuscarCidades, useBuscarEstados } from '../../hooks/IBGEHooks';
+import { useForm } from 'react-hook-form';
 
 
 const HomeContainer = styled.section`
@@ -77,29 +78,38 @@ const Home = () => {
   const { data: estados } = useBuscarEstados();
   const { data: cidades, refetch: cidadesRefetch } = useBuscarCidades(estado);
 
+  const { register, handleSubmit, setValue } = useForm();
+
+  function cadastrar(dados){
+    console.log(dados);
+  }
+
   useEffect(() => {
     cidadesRefetch();
   }, [estado, cidadesRefetch]);
 
   return (
     <HomeContainer>
-      <form>
+      <form onSubmit={handleSubmit(cadastrar)}>
         <h3>Seja bem-vindo(a) visitante</h3>
         <label htmlFor="nome">Nome</label>
         <InputText
           id="nome" 
           placeholder="Digite seu nome"
+          {...register('visitante_nome', {required: true})}
         />
         <label htmlFor="cpf">CPF</label>
         <InputMask
           id="cpf" 
           placeholder="000.000.000-00"
           mask="999.999.999-99"
+          {...register('visitante_cpf', {required: true})}
         />
         <label htmlFor="profissao">Profissão</label>
         <InputText
           id="profissao" 
           placeholder="Digite sua profissão"
+          {...register('visitante_profissao', {required: true})}
         />
         <div className="lado-a-lado">
           <div className="lado">
@@ -107,7 +117,10 @@ const Home = () => {
             <Dropdown 
               id="genero"
               value={genero}
-              onChange={(e) => setGenero(e.target.value)}
+              onChange={(e) => {
+                setGenero(e.target.value);
+                setValue('visitante_genero', e.target.value);
+              }}
               options={generos}
               optionLabel="label"
               optionValue="value"
@@ -119,6 +132,7 @@ const Home = () => {
             <InputText
               id="idade" 
               type="number"
+              {...register('visitante_idade', {required: true})}
             />
           </div>
         </div>
@@ -128,7 +142,10 @@ const Home = () => {
             <Dropdown 
               id="estado"
               value={estado}
-              onChange={(e) => setEstado(e.target.value)}
+              onChange={(e) => {
+                setEstado(e.target.value);
+                setValue('visitante_estado', e.target.value);
+              }}
               options={estados}
               optionLabel="nome"
               optionValue="sigla"
@@ -140,7 +157,10 @@ const Home = () => {
             <Dropdown 
               id="cidade"
               value={cidade}
-              onChange={(e) => setCidade(e.target.value)}
+              onChange={(e) => {
+                setCidade(e.target.value);
+                setValue('visitante_cidade', e.target.value);
+              }}
               options={cidades}
               optionLabel="nome"
               optionValue="nome"
